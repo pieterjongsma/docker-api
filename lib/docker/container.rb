@@ -279,6 +279,7 @@ class Docker::Container
     name = opts.delete('name')
     query = {}
     query['name'] = name if name
+    opts['HostConfig'] ||= {}
     resp = conn.post('/containers/create', query, :body => opts.to_json)
     hash = Docker::Util.parse_json(resp) || {}
     new(conn, hash)
