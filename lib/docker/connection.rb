@@ -37,7 +37,7 @@ class Docker::Connection
   def request(*args, &block)
     request = compile_request_params(*args, &block)
     log_request(request)
-    resource.request(request, read_timeout: docker_timeout, write_timeout: docker_timeout).body
+    resource.request(request).body
   rescue Excon::Error::UnprocessableEntity => ex
     raise ClientError, ex.response.body
   rescue Excon::Errors::BadRequest => ex
@@ -89,7 +89,9 @@ private
                         }.merge(headers),
       :expects       => (200..204).to_a << 304,
       :idempotent    => http_method == :get,
-      :request_block => block
+      :request_block => block,
+      :read_timeout  => docker_timeout,
+      :write_timeout => docker_timeout
     }.merge(opts).reject { |_, v| v.nil? }
   end
   
