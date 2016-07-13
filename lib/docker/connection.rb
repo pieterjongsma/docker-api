@@ -38,6 +38,8 @@ class Docker::Connection
     request = compile_request_params(*args, &block)
     log_request(request)
     resource.request(request).body
+  rescue Excon::Error::UnprocessableEntity => ex
+    raise ClientError, ex.response.body
   rescue Excon::Errors::BadRequest => ex
     raise ClientError, ex.response.body
   rescue Excon::Errors::Unauthorized => ex
